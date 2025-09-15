@@ -15,8 +15,10 @@ function drawInteraction(faces, hands) {
     }
 
     // This is how to load in the x and y of a point on the hand.
-    let indexFingerTipX = hand.index_finger_tip.x;
-    let indexFingerTipY = hand.index_finger_tip.y;
+    let indexPipX = hand.index_finger_pip.x;
+    let indexPipY = hand.index_finger_pip.y;
+    let middlePipX = hand.middle_finger_pip.x;
+    let middlePipY = hand.middle_finger_pip.y;
 
     //  let pinkyFingerTipX = hand.pinky_finger_tip.x;
     //  let pinkyFingerTipY = hand.pinky_finger_tip.y;
@@ -25,14 +27,16 @@ function drawInteraction(faces, hands) {
     Start drawing on the hands here
     */
 
-    fill(225, 225, 0);
-    ellipse(indexFingerTipX, indexFingerTipY, 30, 30);
+    //fill(0, 225, 0);
+    //ellipse(indexFingerTipX, indexFingerTipY, 30, 30);
 
     // drawPoints(hand)
 
     //fingerPuppet(indexFingerTipX, indexFingerTipY);
 
-    //chameleonHandPuppet(hand)
+    chameleonHandPuppet(hand)
+
+    //spiderFingers(hand);
 
     /*
     Stop drawing on the hands here
@@ -41,7 +45,11 @@ function drawInteraction(faces, hands) {
   // You can make addtional elements here, but keep the hand drawing inside the for loop. 
   //------------------------------------------------------
 }
-
+function spiderFingers(hand){
+  stroke(0);
+  strokeWeight(4);
+  line(indexPipX, indexPipY, middlePipX, middlePipY)
+}
 
 
 
