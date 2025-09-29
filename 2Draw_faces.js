@@ -3,7 +3,7 @@
 function prepareInteraction() {
   //bgImage = loadImage('/images/background.png');
 }
-
+s
 function drawInteraction(faces, hands) {
 
   // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
@@ -64,26 +64,29 @@ function drawInteraction(faces, hands) {
     /*
     Start drawing on the face here
     */
-    noStroke()
+    
     fill(225, 225, 0);
     // fill(get(leftEyeCenterX, leftEyeCenterY))
 
     ellipse(leftEyeCenterX, leftEyeCenterY, leftEyeWidth, leftEyeHeight);
 
-    drawPoints(face.leftEye);
-    drawPoints(face.leftEyebrow);
-    drawPoints(face.lips);
-    drawPoints(face.rightEye);
-    drawPoints(face.rightEyebrow);
+    //drawPoints(face.leftEye);
+    //drawPoints(face.leftEyebrow);
+    //drawPoints(face.lips);
+    //drawPoints(face.rightEye);
+    //drawPoints(face.rightEyebrow);
 
-    // drawX(rightEyeCenterX,rightEyeCenterY);
-    // drawX(leftEyeCenterX,leftEyeCenterY);
+    //drawX(rightEyeCenterX,rightEyeCenterY);
+    //drawX(leftEyeCenterX,leftEyeCenterY);
+   // drawEyes(rightEyeCenterX,rightEyeCenterY,rightEyeHeight);
+    //drawEyes(leftEyeCenterX,leftEyeCenterY,leftEyeHeight*3);
+    //drawEyebrows(rightEyebrowCenterX,rightEyebrowCenterY);
+    //drawEyebrows(leftEyebrowCenterX,leftEyebrowCenterY-15);
+    openMouth(face)
+    //drawX(noseTipX,noseTipY); 
 
-
-    // drawX(noseTipX,noseTipY); 
-
-    // drawX(face.keypoints[332].x,face.keypoints[332].y);
-    // drawX(face.keypoints[103].x,face.keypoints[103].y);
+    //drawX(face.keypoints[332].x,face.keypoints[332].y);
+    //drawX(face.keypoints[103].x,face.keypoints[103].y);
 
 
     /*
@@ -95,17 +98,33 @@ function drawInteraction(faces, hands) {
   // You can make addtional elements here, but keep the face drawing inside the for loop. 
 }
 
+function drawEyes(X, Y, H) {
+  fill(255,255,255);
+  noStroke();
+  push()
+  ellipse(X,Y,70,H)
+  fill(0)
+  ellipse(X,Y,30,H/1.5)
+
+  pop()
+}
+function drawEyebrows(X, Y) {
+  fill(0)
+  push()
+  rectMode(CENTER);
+  rect(X,Y,80, 20)
+
+  pop()
+}
 function drawX(X, Y) {
   push()
-
+  stroke(0);
   strokeWeight(15)
   line(X - 20, Y - 20, X + 20, Y + 20)
   line(X - 20, Y + 20, X + 20, Y - 20)
 
   pop()
 }
-
-
 // This function draw's a dot on all the keypoints. It can be passed a whole face, or part of one. 
 function drawPoints(feature) {
 
@@ -118,4 +137,23 @@ function drawPoints(feature) {
   }
   pop()
 
+}
+
+
+function openMouth(face) { 
+  let isMouthOpen = true;
+  let upperLip = face.keypoints[13]
+  let lowerLip = face.keypoints[14]
+
+  let d = dist (upperLip.x, upperLip.y,lowerLip.x, lowerLip.y)
+  if (d<10) {
+    isMouthOpen = false
+  } else {
+    isMouthOpen = true
+  }
+  if (isMouthOpen = true) {
+    text(200, 200, "hello world")
+  } else{
+    return
+  }
 }

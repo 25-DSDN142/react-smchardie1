@@ -30,13 +30,15 @@ function drawInteraction(faces, hands) {
     //fill(0, 225, 0);
     //ellipse(indexFingerTipX, indexFingerTipY, 30, 30);
 
-    // drawPoints(hand)
+    //drawPoints(hand)
 
     //fingerPuppet(indexFingerTipX, indexFingerTipY);
 
-    chameleonHandPuppet(hand)
+    //chameleonHandPuppet(hand)
 
-    //spiderFingers(hand);
+    //pinchCircle(hand)
+
+
 
     /*
     Stop drawing on the hands here
@@ -45,15 +47,6 @@ function drawInteraction(faces, hands) {
   // You can make addtional elements here, but keep the hand drawing inside the for loop. 
   //------------------------------------------------------
 }
-function spiderFingers(hand){
-  stroke(0);
-  strokeWeight(4);
-  line(indexPipX, indexPipY, middlePipX, middlePipY)
-}
-
-
-
-
 
 function fingerPuppet(x, y) {
   fill(255, 38, 219) // pink
