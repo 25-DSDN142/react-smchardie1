@@ -1,11 +1,14 @@
 // ----=  Faces  =----
 /* load images here */
+let bgImage;
+bgImage = loadImage('/images/background.png');
+  image(bgImage, 200, 200)
+
 function prepareInteraction() {
-  //bgImage = loadImage('/images/background.png');
+
 }
 s
 function drawInteraction(faces, hands) {
-
   // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
   for (let i = 0; i < faces.length; i++) {
     let face = faces[i]; // face holds all the keypoints of the face\
@@ -61,14 +64,20 @@ function drawInteraction(faces, hands) {
 
     let noseTipX = face.keypoints[4].x;
     let noseTipY = face.keypoints[4].y;
+
+    
     /*
     Start drawing on the face here
     */
     
-    fill(225, 225, 0);
+    leftEye(face);
+    rightEye(face);
+    mouth(face);
     // fill(get(leftEyeCenterX, leftEyeCenterY))
 
-    ellipse(leftEyeCenterX, leftEyeCenterY, leftEyeWidth, leftEyeHeight);
+    //ellipse(leftEyeCenterX, leftEyeCenterY, leftEyeWidth, leftEyeHeight);
+
+  
 
     //drawPoints(face.leftEye);
     //drawPoints(face.leftEyebrow);
@@ -97,17 +106,44 @@ function drawInteraction(faces, hands) {
   //------------------------------------------------------
   // You can make addtional elements here, but keep the face drawing inside the for loop. 
 }
+function leftEye(face) {
+  let leftEyeValues = [33, 246, 161, 160, 159, 158, 157, 133, 155, 154, 153, 145, 144, 163, 7];
 
-function drawEyes(X, Y, H) {
-  fill(255,255,255);
-  noStroke();
-  push()
-  ellipse(X,Y,70,H)
-  fill(0)
-  ellipse(X,Y,30,H/1.5)
-
-  pop()
+  fill(255, 255, 255);
+  beginShape();
+  for (let i = 0; i < leftEyeValues.length; i++) {
+    let pt = face.keypoints[leftEyeValues[i]];
+    vertex(pt.x, pt.y);
+  }
+  endShape(CLOSE);
 }
+
+function rightEye(face) {
+  let rightEyeValues = [362, 398, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382];
+
+  fill(255, 255, 255);
+  beginShape();
+  for (let i = 0; i < rightEyeValues.length; i++) {
+    let pt = face.keypoints[rightEyeValues[i]];
+    vertex(pt.x, pt.y);
+  }
+  endShape(CLOSE);
+}
+
+function mouth(face) {
+  let mouthValues = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95];
+
+  fill(255, 255, 255);
+  beginShape();
+  for (let i = 0; i < mouthValues.length; i++) {
+    let pt = face.keypoints[mouthValues[i]];
+    vertex(pt.x, pt.y);
+  }
+  endShape(CLOSE); 
+
+}
+
+
 function drawEyebrows(X, Y) {
   fill(0)
   push()
@@ -140,6 +176,7 @@ function drawPoints(feature) {
 }
 
 
+
 function openMouth(face) { 
   let isMouthOpen = true;
   let upperLip = face.keypoints[13]
@@ -151,8 +188,8 @@ function openMouth(face) {
   } else {
     isMouthOpen = true
   }
-  if (isMouthOpen = true) {
-    text(200, 200, "hello world")
+  if (isMouthOpen === true) {
+    text("hello world", upperLip.x, upperLip.y);
   } else{
     return
   }
