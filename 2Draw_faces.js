@@ -1,13 +1,11 @@
 // ----=  Faces  =----
 /* load images here */
-let bgImage;
-bgImage = loadImage('/images/background.png');
-  image(bgImage, 200, 200)
+let c1;
+let c2;
 
 function prepareInteraction() {
 
 }
-s
 function drawInteraction(faces, hands) {
   // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
   for (let i = 0; i < faces.length; i++) {
@@ -69,9 +67,18 @@ function drawInteraction(faces, hands) {
     /*
     Start drawing on the face here
     */
+    noStroke();
+    let upperLip = face.keypoints[13];
+    let lowerLip = face.keypoints[14];
+    let lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y);
     
-    leftEye(face);
-    rightEye(face);
+    let c1 = color(255, 255, 255); // white
+    let c2 = color(255, 0, 0);     // red
+    let amt = map(lipDistance, 0, 80, 0, 1);
+    let eyeColour = lerpColor(c1, c2, amt);
+
+    leftEye(face, eyeColour);
+    rightEye(face, eyeColour);
     mouth(face);
     // fill(get(leftEyeCenterX, leftEyeCenterY))
 
@@ -91,7 +98,7 @@ function drawInteraction(faces, hands) {
     //drawEyes(leftEyeCenterX,leftEyeCenterY,leftEyeHeight*3);
     //drawEyebrows(rightEyebrowCenterX,rightEyebrowCenterY);
     //drawEyebrows(leftEyebrowCenterX,leftEyebrowCenterY-15);
-    openMouth(face)
+ 
     //drawX(noseTipX,noseTipY); 
 
     //drawX(face.keypoints[332].x,face.keypoints[332].y);
@@ -106,10 +113,10 @@ function drawInteraction(faces, hands) {
   //------------------------------------------------------
   // You can make addtional elements here, but keep the face drawing inside the for loop. 
 }
-function leftEye(face) {
+function leftEye(face, colour) {
   let leftEyeValues = [33, 246, 161, 160, 159, 158, 157, 133, 155, 154, 153, 145, 144, 163, 7];
 
-  fill(255, 255, 255);
+  fill(colour);
   beginShape();
   for (let i = 0; i < leftEyeValues.length; i++) {
     let pt = face.keypoints[leftEyeValues[i]];
@@ -118,10 +125,10 @@ function leftEye(face) {
   endShape(CLOSE);
 }
 
-function rightEye(face) {
+function rightEye(face, colour) {
   let rightEyeValues = [362, 398, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382];
 
-  fill(255, 255, 255);
+  fill(colour);
   beginShape();
   for (let i = 0; i < rightEyeValues.length; i++) {
     let pt = face.keypoints[rightEyeValues[i]];
@@ -175,22 +182,3 @@ function drawPoints(feature) {
 
 }
 
-
-
-function openMouth(face) { 
-  let isMouthOpen = true;
-  let upperLip = face.keypoints[13]
-  let lowerLip = face.keypoints[14]
-
-  let d = dist (upperLip.x, upperLip.y,lowerLip.x, lowerLip.y)
-  if (d<10) {
-    isMouthOpen = false
-  } else {
-    isMouthOpen = true
-  }
-  if (isMouthOpen === true) {
-    text("hello world", upperLip.x, upperLip.y);
-  } else{
-    return
-  }
-}
