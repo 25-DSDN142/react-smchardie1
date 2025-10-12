@@ -1,13 +1,75 @@
 // ----=  HANDS  =----
+let bgImage;
+let villageImage;
+let villageFireImage;
+let dragonBody;
+let dragonBackImage;
+let dragonMouthImage;
+let dragonTopImage;
 function prepareInteraction() {
-  //bgImage = loadImage('/images/background.png');
+  bgImage = loadImage('/images/background.png');
+  villageImage = loadImage('/images/village.png')
+  villageFireImage = loadImage('/images/villagefire.png')
+  dragonBodyImage = loadImage('/images/dragonbody.png')
+  dragonBackImage = loadImage('/images/dragonback.png')
+  dragonMouthImage = loadImage('/images/dragonmouth.png')
+  dragonTopImage = loadImage('/images/dragontop.png')
 }
 
 function drawInteraction(faces, hands) {
+  image(bgImage, 0, 0, width, height)
 
   // hands part
   // USING THE GESTURE DETECTORS (check their values in the debug menu)
   // detectHandGesture(hand) returns "Pinch", "Peace", "Thumbs Up", "Pointing", "Open Palm", or "Fist"
+
+  //------------------------------------------------------------
+  //facePart
+  // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
+  for (let i = 0; i < faces.length; i++) {
+    let face = faces[i]; // face holds all the keypoints of the face\
+    console.log(face);
+    if (showKeypoints) {
+      drawPoints(face)
+    }
+    noStroke();
+    let faceCenterX = face.faceOval.centerX;
+    let faceCenterY = face.faceOval.centerY;
+
+    let leftCheek = face.keypoints[234];
+    let rightCheek = face.keypoints[454];
+    let faceWidth = dist(leftCheek.x, leftCheek.y, rightCheek.x, rightCheek.y);
+    
+    let upperLip = face.keypoints[13];
+    let lowerLip = face.keypoints[14];
+    let lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y);
+    let mouthOffset = map(lipDistance, 0, 30, 0, 50);
+
+    
+
+    push();
+    imageMode(CENTER);
+
+    // make dragon body start at centre of head (top edge aligns with face centre)
+    let bodyHeight = faceWidth * 2;
+    let bodyY = faceCenterY + bodyHeight / 2; // shifts body down so top is at face centre
+
+    image(dragonBodyImage, faceCenterX, bodyY, faceWidth * 2, bodyHeight);
+
+    // rest of dragon parts
+    image(dragonBackImage, faceCenterX, faceCenterY - 100, faceWidth * 2, faceWidth * 2);
+    image(dragonMouthImage, faceCenterX, faceCenterY - 100 + mouthOffset, faceWidth * 2, faceWidth * 2);
+    image(dragonTopImage, faceCenterX, faceCenterY - 100, faceWidth * 2, faceWidth * 2);
+
+    pop();
+
+    village(face);
+
+    /*
+    Stop drawing on the face here
+    */
+
+  }
 
   // for loop to capture if there is more than one hand on the screen. This applies the same process to all hands.
   for (let i = 0; i < hands.length; i++) {
@@ -50,35 +112,6 @@ function drawInteraction(faces, hands) {
     arc(x, y + 5, 20, 15, 0, PI);
     pop();
 }
-
-
-  //------------------------------------------------------------
-  //facePart
-  // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
-  for (let i = 0; i < faces.length; i++) {
-    let face = faces[i]; // face holds all the keypoints of the face\
-    console.log(face);
-    if (showKeypoints) {
-      drawPoints(face)
-    }
-    noStroke();
-    let upperLip = face.keypoints[13];
-    let lowerLip = face.keypoints[14];
-    let lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y);
-    
-    let c1 = color(255, 255, 255); // white
-    let c2 = color(255, 0, 0);     // red
-    let amt = map(lipDistance, 0, 80, 0, 1);
-    let eyeColour = lerpColor(c1, c2, amt);
-
-    leftEye(face, eyeColour);
-    rightEye(face, eyeColour);
-    mouth(face);
-    /*
-    Stop drawing on the face here
-    */
-
-  }
   //------------------------------------------------------
   // You can make addtional elements here, but keep the face drawing inside the for loop. 
 }
@@ -119,24 +152,6 @@ function mouth(face) {
 
 }
 
-
-function drawEyebrows(X, Y) {
-  fill(0)
-  push()
-  rectMode(CENTER);
-  rect(X,Y,80, 20)
-
-  pop()
-}
-function drawX(X, Y) {
-  push()
-  stroke(0);
-  strokeWeight(15)
-  line(X - 20, Y - 20, X + 20, Y + 20)
-  line(X - 20, Y + 20, X + 20, Y - 20)
-
-  pop()
-}
 // This function draw's a dot on all the keypoints. It can be passed a whole face, or part of one. 
 function drawPoints(feature) {
 
@@ -151,3 +166,22 @@ function drawPoints(feature) {
 
 }
 
+function village(face) { 
+  let isMouthOpen = true;
+  let upperLip = face.keypoints[13]
+  let lowerLip = face.keypoints[14]
+
+  let d = dist (upperLip.x, upperLip.y,lowerLip.x, lowerLip.y)
+  
+  let fireOpacity = map(d, 0, 35, 0, 255);
+  fireOpacity = constrain(fireOpacity, 0, 255); // safety
+
+  // Draw the normal village
+  image(villageImage, 0, 0, width, height);
+
+  // Apply tint *only* to the fire image
+  push();
+  tint(255, fireOpacity);
+  image(villageFireImage, 0, 0, width, height);
+  pop(); // reset tint
+}
