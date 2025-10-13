@@ -6,6 +6,8 @@ let dragonBody;
 let dragonBackImage;
 let dragonMouthImage;
 let dragonTopImage;
+let dragonFireImage;
+
 function prepareInteraction() {
   bgImage = loadImage('/images/background.png');
   villageImage = loadImage('/images/village.png')
@@ -14,6 +16,7 @@ function prepareInteraction() {
   dragonBackImage = loadImage('/images/dragonback.png')
   dragonMouthImage = loadImage('/images/dragonmouth.png')
   dragonTopImage = loadImage('/images/dragontop.png')
+  dragonFireImage = loadImage('/images/dragonfire.png')
 }
 
 function drawInteraction(faces, hands) {
@@ -44,6 +47,7 @@ function drawInteraction(faces, hands) {
     let lowerLip = face.keypoints[14];
     let lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y);
     let mouthOffset = map(lipDistance, 0, 30, 0, 50);
+    let fireOpacity = map(lipDistance, 0, 25, 0, 255);
 
     
 
@@ -59,11 +63,18 @@ function drawInteraction(faces, hands) {
     // rest of dragon parts
     image(dragonBackImage, faceCenterX, faceCenterY - 100, faceWidth * 2, faceWidth * 2);
     image(dragonMouthImage, faceCenterX, faceCenterY - 100 + mouthOffset, faceWidth * 2, faceWidth * 2);
+
+    village(face);
+
+    push();
+    tint(255, fireOpacity);
+    image(dragonFireImage, faceCenterX, faceCenterY + 100, faceWidth * 2, faceWidth * 2);
+    pop();
+    
     image(dragonTopImage, faceCenterX, faceCenterY - 100, faceWidth * 2, faceWidth * 2);
 
     pop();
 
-    village(face);
 
     /*
     Stop drawing on the face here
@@ -177,11 +188,11 @@ function village(face) {
   fireOpacity = constrain(fireOpacity, 0, 255); // safety
 
   // Draw the normal village
-  image(villageImage, 0, 0, width, height);
+  image(villageImage, width/2, height/2, width, height);
 
   // Apply tint *only* to the fire image
   push();
   tint(255, fireOpacity);
-  image(villageFireImage, 0, 0, width, height);
+  image(villageFireImage, width/2, height/2, width, height);
   pop(); // reset tint
 }
