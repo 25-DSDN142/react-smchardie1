@@ -7,6 +7,7 @@ let dragonBackImage;
 let dragonMouthImage;
 let dragonTopImage;
 let dragonFireImage;
+// ----=  Image Character Variables  =----
 let farmerImage, farmerFireImage, farmerDeadImage;
 let chefImage, chefFireImage, chefDeadImage;
 let maidenImage, maidenFireImage, maidenDeadImage;
@@ -20,6 +21,7 @@ let maidenDead = false;
 let kidDead = false;
 
 function prepareInteraction() {
+  // ----=  Image Uploading  =----
   // Background
   bgImage = loadImage('/images/background.png');
   // Village
@@ -54,18 +56,11 @@ function prepareInteraction() {
 
 function drawInteraction(faces, hands) {
   image(bgImage, 0, 0, width, height)
-
-  // hands part
-  // USING THE GESTURE DETECTORS (check their values in the debug menu)
-  // detectHandGesture(hand) returns "Pinch", "Peace", "Thumbs Up", "Pointing", "Open Palm", or "Fist"
-
-  //------------------------------------------------------------
-  //facePart
-  // for loop to capture if there is more than one face on the screen. This applies the same process to all faces. 
   for (let i = 0; i < faces.length; i++) {
     let face = faces[i];
     if (showKeypoints) drawPoints(face);
 
+    // ----=  Face Variables  =----
     let faceCenterX = face.faceOval.centerX;
     let faceCenterY = face.faceOval.centerY;
 
@@ -76,9 +71,9 @@ function drawInteraction(faces, hands) {
 
     let upperLip = face.keypoints[13];
     let lowerLip = face.keypoints[14];
-    lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y);
-    let mouthOffset = map(lipDistance, 0, 30, 0, 50);
-    let fireOpacity = map(lipDistance, 0, 25, 0, 255);
+    lipDistance = dist(upperLip.x, upperLip.y, lowerLip.x, lowerLip.y); // Tracking the distance between top lip and bottom lip
+    let mouthOffset = map(lipDistance, 0, 30, 0, 50); // For the dragons mouth image to move in relation to lipDistance
+    let fireOpacity = map(lipDistance, 0, 25, 0, 255); // Tracking the lipDistance in terms of the dragons fire opacity
 
     push();
     imageMode(CENTER);
@@ -88,7 +83,7 @@ function drawInteraction(faces, hands) {
     let bodyY = faceCenterY + bodyHeight / 2;
     image(dragonBodyImage, faceCenterX, bodyY, faceWidth * 2, bodyHeight);
 
-    // Dragon parts
+    // ----=  Layering the Dragon parts images  =----
     image(dragonBackImage, faceCenterX, faceCenterY - 100, faceWidth * 2, faceWidth * 2);
     image(dragonMouthImage, faceCenterX, faceCenterY - 100 + mouthOffset, faceWidth * 2, faceWidth * 2);
 
@@ -97,7 +92,7 @@ function drawInteraction(faces, hands) {
 
     // Fire effect when mouth opens
     push();
-    tint(255, fireOpacity);
+    tint(255, fireOpacity); //Controlling the opacity of the Dragons fire
     image(dragonFireImage, faceCenterX, faceCenterY + 100, faceWidth * 2, faceWidth * 2);
     pop();
 
@@ -114,9 +109,10 @@ function drawInteraction(faces, hands) {
     */
 
   }
+  // ----=  Creating varaibles for the villagers to come back to life  =----
   let leftHandPresent = false;
   let rightHandPresent = false;
-  // for loop to capture if there is more than one hand on the screen. This applies the same process to all hands.
+  
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
     let handType = hand.handedness; // "Left" or "Right"
@@ -132,6 +128,7 @@ function drawInteraction(faces, hands) {
     let pinkyX = hand.pinky_finger_tip.x;
     let pinkyY = hand.pinky_finger_tip.y;
 
+    // Setting up the face variables for the fingers
     if (faces.length === 0) continue;
     let face = faces[0];
     let mouth = face.mouth;
@@ -139,10 +136,11 @@ function drawInteraction(faces, hands) {
     // -------- Left Hand --------
     if (handType === "Left") {
       leftHandPresent = true;
-      // Farmer (index) and Kid (pinky)
-      checkMouthCollision(indexX, indexY, 'farmer', mouth);
+      // Tracking the finger to the mouth distance for when the villagers get eaten
+      checkMouthCollision(indexX, indexY, 'farmer', mouth); 
       checkMouthCollision(pinkyX, pinkyY, 'kid', mouth);
 
+      // Farmer (index) and Kid (pinky)
       farmerPuppet(indexX, indexY);
       kidPuppet(pinkyX, pinkyY);
     }
@@ -150,10 +148,11 @@ function drawInteraction(faces, hands) {
     // -------- Right Hand --------
     if (handType === "Right") {
       rightHandPresent = true;
-      // Chef (index) and Maiden (pinky)
+      // Tracking the finger to the mouth distance for when the villagers get eaten
       checkMouthCollision(indexX, indexY, 'chef', mouth);
       checkMouthCollision(pinkyX, pinkyY, 'maiden', mouth);
 
+      // Chef (index) and Maiden (pinky)
       chefPuppet(indexX, indexY);
       maidenPuppet(pinkyX, pinkyY);
     }
@@ -170,8 +169,8 @@ function drawInteraction(faces, hands) {
 }
 // ---------------- Check if finger is in mouth ----------------
 function checkMouthCollision(fx, fy, character, mouth) {
-  let distToMouth = dist(fx, fy, mouth.x, mouth.y);
-  if (lipDistance > 15 && distToMouth < mouth.size / 2) {
+  let distToMouth = dist(fx, fy, mouth.x, mouth.y); // Distance between chosen finger to the mouth
+  if (lipDistance > 15 && distToMouth < mouth.size / 2) { // If finger and mouth come into contact the villager dies
     if (character === 'farmer') farmerDead = true;
     if (character === 'chef') chefDead = true;
     if (character === 'maiden') maidenDead = true;
@@ -183,12 +182,12 @@ function farmerPuppet(x, y) {
   push();
   imageMode(CENTER);
 
-  if (farmerDead) {
+  if (farmerDead) { // If farmerDead variable is true
     image(farmerDeadImage, x, y, 280 / 3, 716 / 3);
-  } else if (lipDistance > 5) {
+  } else if (lipDistance > 5) { // If mouth is open the villager on fire
     image(farmerFireImage, x, y, 280 / 3, 716 / 3);
   } else {
-    image(farmerImage, x, y, 280 / 3, 716 / 3);
+    image(farmerImage, x, y, 280 / 3, 716 / 3); // normal villager
   }
 
   pop();
@@ -197,12 +196,12 @@ function chefPuppet(x, y) {
   push();
   imageMode(CENTER);
 
-  if (chefDead) {
-    image(chefDeadImage, x, y, 318 / 3, 752  / 3);
-  } else if (lipDistance > 5) {
+  if (chefDead) { // If chefDead variable is true
+    image(chefDeadImage, x, y, 318 / 3, 752  / 3); 
+  } else if (lipDistance > 5) { // If mouth is open the villager on fire
     image(chefFireImage, x, y, 318 / 3, 752  / 3);
   } else {
-    image(chefImage, x, y, 318 / 3, 752  / 3);
+    image(chefImage, x, y, 318 / 3, 752  / 3); // normal villager
   }
 
   pop();
@@ -211,12 +210,12 @@ function maidenPuppet(x, y) {
   push();
   imageMode(CENTER);
 
-  if (maidenDead) {
+  if (maidenDead) { // If maidenDead variable is true
     image(maidenDeadImage, x, y, 301 / 3, 741 / 3);
   } else if (lipDistance > 5) {
-    image(maidenFireImage, x, y, 301 / 3, 741 / 3);
+    image(maidenFireImage, x, y, 301 / 3, 741 / 3); // If mouth is open the villager on fire
   } else {
-    image(maidenImage, x, y, 301 / 3, 741 / 3);
+    image(maidenImage, x, y, 301 / 3, 741 / 3); // normal villager
   }
 
   pop();
@@ -225,53 +224,15 @@ function kidPuppet(x, y) {
   push();
   imageMode(CENTER);
 
-  if (kidDead) {
+  if (kidDead) { // If kidDead variable is true
     image(kidDeadImage, x, y, 188 / 3, 465 / 3);
   } else if (lipDistance > 5) {
-    image(kidFireImage, x, y, 188 / 3, 465 / 3);
+    image(kidFireImage, x, y, 188 / 3, 465 / 3); // If mouth is open the villager on fire
   } else {
-    image(kidImage, x, y, 188 / 3, 465 / 3);
+    image(kidImage, x, y, 188 / 3, 465 / 3); // normal villager
   }
 
   pop();
-}
-  //------------------------------------------------------
-  // You can make addtional elements here, but keep the face drawing inside the for loop. 
-function leftEye(face, colour) {
-  let leftEyeValues = [33, 246, 161, 160, 159, 158, 157, 133, 155, 154, 153, 145, 144, 163, 7];
-
-  fill(colour);
-  beginShape();
-  for (let i = 0; i < leftEyeValues.length; i++) {
-    let pt = face.keypoints[leftEyeValues[i]];
-    vertex(pt.x, pt.y);
-  }
-  endShape(CLOSE);
-}
-
-function rightEye(face, colour) {
-  let rightEyeValues = [362, 398, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382];
-
-  fill(colour);
-  beginShape();
-  for (let i = 0; i < rightEyeValues.length; i++) {
-    let pt = face.keypoints[rightEyeValues[i]];
-    vertex(pt.x, pt.y);
-  }
-  endShape(CLOSE);
-}
-
-function mouth(face) {
-  let mouthValues = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95];
-
-  fill(255, 255, 255);
-  beginShape();
-  for (let i = 0; i < mouthValues.length; i++) {
-    let pt = face.keypoints[mouthValues[i]];
-    vertex(pt.x, pt.y);
-  }
-  endShape(CLOSE); 
-
 }
 
 // This function draw's a dot on all the keypoints. It can be passed a whole face, or part of one. 
@@ -287,15 +248,14 @@ function drawPoints(feature) {
   pop()
 
 }
-
+// ----=  Controlling the village image for when its on fire  =----
 function village(face) { 
-  let isMouthOpen = true;
   let upperLip = face.keypoints[13]
   let lowerLip = face.keypoints[14]
 
-  let d = dist (upperLip.x, upperLip.y,lowerLip.x, lowerLip.y)
+  let d = dist (upperLip.x, upperLip.y,lowerLip.x, lowerLip.y) // Tracking distance from lips 
   
-  let fireOpacity = map(d, 0, 35, 0, 255);
+  let fireOpacity = map(d, 0, 35, 0, 255); // Tracking the lipDistance in terms of the villages fire opacity
   fireOpacity = constrain(fireOpacity, 0, 255); // safety
 
   // Draw the normal village
